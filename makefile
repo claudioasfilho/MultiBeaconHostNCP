@@ -17,7 +17,7 @@
 uniq = $(strip $(if $1,$(firstword $1) \
        $(call uniq,$(filter-out $(firstword $1),$1))))
 
-PROJECTNAME = EnhancedADV
+PROJECTNAME = MultiBeaconHostNCP
 
 OBJ_DIR = build
 EXE_DIR = exe
