@@ -85,9 +85,9 @@ AR = ar
 ####################################################################
 
 INCLUDEPATHS += \
--I../common/uart \
--I../../../../protocol/bluetooth/ble_stack/inc/common \
--I../../../../protocol/bluetooth/ble_stack/inc/host
+-I../../common/uart \
+-I../../../../../protocol/bluetooth/ble_stack/inc/common \
+-I../../../../../protocol/bluetooth/ble_stack/inc/host
 
 # -MMD : Don't generate dependencies on system header files.
 # -MP  : Add phony targets, useful when a h-file is removed from a project.
@@ -141,15 +141,15 @@ override LDFLAGS +=
 ####################################################################
 
 C_SRC +=  \
-../../../../protocol/bluetooth/ble_stack/src/host/gecko_bglib.c \
+../../../../../protocol/bluetooth/ble_stack/src/host/gecko_bglib.c \
 main.c \
 app.c \
 
 # this file should be the last added
 ifeq ($(OS),posix)
-C_SRC += ../common/uart/uart_posix.c
+C_SRC += ../../common/uart/uart_posix.c
 else ifeq ($(OS),win)
-C_SRC += ../common/uart/uart_win.c
+C_SRC += ../../common/uart/uart_win.c
 endif
 
 s_SRC +=

@@ -110,7 +110,7 @@ void iBeaconADV(void)
  // struct gecko_msg_le_gap_bt5_set_mode_rsp_t *bt5_set_mode_response;
 
   /* Set 0 dBm Transmit Power */
-  gecko_cmd_system_set_tx_power(0);
+  gecko_cmd_le_gap_set_advertise_tx_power(IBEACON_HANDLER, 0);
 
   /* Set custom advertising data using the Enhanced Advertising scheme */
 
