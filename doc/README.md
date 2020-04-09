@@ -15,7 +15,7 @@ Target: x86_64-apple-darwin16.7.0
 Thread model: posix
 
 
-Development Board: Silicon Labs WSTK with BRD4159A (EFR32BG13P632F512GM48)
+Development Board: Silicon Labs WSTK with BRD4104 (EFR32BG13P632F512GM48)
 
 Usage:
 
