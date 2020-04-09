@@ -104,7 +104,7 @@ void iBeaconADV(void)
     };
 
   //
-  uint8_t len = sizeof(bcnBeaconAdvData);
+  uint8_t iBeaconlen = sizeof(bcnBeaconAdvData);
   uint8_t *pData = (uint8_t*)(&bcnBeaconAdvData);
 
  // struct gecko_msg_le_gap_bt5_set_mode_rsp_t *bt5_set_mode_response;
@@ -114,19 +114,20 @@ void iBeaconADV(void)
 
   /* Set custom advertising data using the Enhanced Advertising scheme */
 
-  gecko_cmd_le_gap_bt5_set_adv_data(IBEACON_HANDLER, 0,len, pData);
+  gecko_cmd_le_gap_bt5_set_adv_data(IBEACON_HANDLER, 0,iBeaconlen, pData);
 
   /* Set advertising parameters. 100ms advertisement interval. All channels used.
     * The first parameter defines the Advertiser Handle, the second two parameters are minimum and
     * maximum advertising interval, both in units of (milliseconds * 1.6).
     * The third parameter '7' sets advertising on all channels. */
 
-  gecko_cmd_le_gap_bt5_set_adv_parameters(IBEACON_HANDLER,160,160,7,1);
+  gecko_cmd_le_gap_set_advertise_timing(IBEACON_HANDLER, 160, 160, 0, 0);
+
 
    /* Start advertising in user mode and enable connections 2000 events before expiring ... just a random number*/
    //bt5_set_mode_response = gecko_cmd_le_gap_bt5_set_mode(0,le_gap_user_data, le_gap_non_connectable, 0,/*le_gap_non_resolvable*/ le_gap_identity_address);
 
-   gecko_cmd_le_gap_bt5_set_mode(IBEACON_HANDLER,le_gap_user_data, le_gap_non_connectable, 0,le_gap_non_resolvable);
+   gecko_cmd_le_gap_start_advertising(IBEACON_HANDLER, le_gap_user_data, le_gap_non_connectable);
 
 }
 
@@ -140,22 +141,36 @@ void iBeaconADV(void)
 #define EDDYSTONE_DATA_LEN           (30)
 static uint8_t eddystone_data[EDDYSTONE_DATA_LEN] = {
 
-  0x03,          //Length of service list
-  0x03,          //service list
-  0xAA, 0xFE,    //Eddystone ID
-  0x13,          //length of service data
-  0x16,          //service data
-  0xAA,  0xFE,   //Eddystone ID
-  0x10,          //frame type Eddyston-URL
-  0x00,          // tx power
-  0x00,          //http://www.
-  'a','c','t','i','o','n','t','e','c','.','c','o','m'
-
+  0x03,          // Length of service list
+  0x03,          // Service list
+  0xAA, 0xFE,    // Eddystone ID
+  0x10,          // Length of service data
+  0x16,          // Service data
+  0xAA,  0xFE,   // Eddystone ID
+  0x10,          // Frame type Eddystone-URL
+  0x00,          // Tx power
+  0x00,          // http://www., 0x01=https://www.
+  's','i','l','a','b','s','.','c','o','m'
 };
 
 
+void EddyStoneADV(void)
+{
+  /* EddyStone Beacon
+     * Add the EddyStone beacon related commands.
+     * We will use the same commands as in the iBeacon but with the Eddystone data and Handler
+     * gecko_cmd_le_gap_bt5_set_adv_data(EDDYSTONE_HANDLER, 0,30, eddystone_data);
+     * gecko_cmd_le_gap_bt5_set_adv_parameters(EDDYSTONE_HANDLER,160,160,7,0);
+     * gecko_cmd_le_gap_bt5_set_mode(EDDYSTONE_HANDLER,le_gap_user_data, le_gap_non_connectable,0,le_gap_non_resolvable);
+     *
+     * */
+  gecko_cmd_le_gap_bt5_set_adv_data(IBEACON_HANDLER, 0, EDDYSTONE_DATA_LEN, eddystone_data);
+  gecko_cmd_le_gap_set_advertise_timing(EDDYSTONE_HANDLER,160,160,0,0);
+  gecko_cmd_le_gap_start_advertising(EDDYSTONE_HANDLER,le_gap_user_data, le_gap_non_connectable);
 
 
+
+}
 
 
 
@@ -186,20 +201,8 @@ void appHandleEvents(struct gecko_cmd_packet *evt)
         appBooted = true;
         printf("System booted. Starting iBeacon... \n");
         iBeaconADV();
-
         printf("Starting EddyStone Beacon... \n");
-        /* EddyStone Beacon
-           * Add the EddyStone beacon related commands.
-           * We will use the same commands as in the iBeacon but with the Eddystone data and Handler
-           * gecko_cmd_le_gap_bt5_set_adv_data(EDDYSTONE_HANDLER, 0,30, eddystone_data);
-           * gecko_cmd_le_gap_bt5_set_adv_parameters(EDDYSTONE_HANDLER,160,160,7,0);
-           * gecko_cmd_le_gap_bt5_set_mode(EDDYSTONE_HANDLER,le_gap_user_data, le_gap_non_connectable,0,le_gap_non_resolvable);
-           *
-           * */
-        gecko_cmd_le_gap_bt5_set_adv_data(EDDYSTONE_HANDLER, 0,30, eddystone_data);
-        gecko_cmd_le_gap_bt5_set_adv_parameters(EDDYSTONE_HANDLER,160,160,7,0);
-        gecko_cmd_le_gap_bt5_set_mode(EDDYSTONE_HANDLER,le_gap_user_data, le_gap_non_connectable,0,le_gap_non_resolvable);
-
+        EddyStoneADV();
         break;
 
 
